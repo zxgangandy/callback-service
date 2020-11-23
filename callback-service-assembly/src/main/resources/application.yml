@@ -1,0 +1,9 @@
+server:
+  port: 8930
+
+spring:
+  application:
+    name: payment-service
+  profiles:
+    active: @profiles.active@
+

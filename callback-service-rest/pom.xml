@@ -9,15 +9,19 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>callback-service-assembly</artifactId>
+    <artifactId>callback-service-rest</artifactId>
+
 
     <dependencies>
         <dependency>
             <groupId>io.github.zxgangandy</groupId>
-            <artifactId>callback-service-rest</artifactId>
+            <artifactId>callback-service-biz</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.zxgangandy</groupId>
+            <artifactId>callback-service-model</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
-
-
 </project>
