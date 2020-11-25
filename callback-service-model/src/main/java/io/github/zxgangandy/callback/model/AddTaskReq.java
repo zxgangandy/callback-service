@@ -31,9 +31,10 @@ public class AddTaskReq {
     private String targetApp;
 
     /**
-     * 回调源app的IP
+     * 回调目标url地址
      */
-    private String sourceIp;
+    @NotBlank
+    private String targetUrl;
 
     /**
      * 业务类型

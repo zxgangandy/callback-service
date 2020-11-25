@@ -20,14 +20,19 @@ public class AddTaskReqBO {
     private String sourceApp;
 
     /**
+     * 回调源app的IP
+     */
+    private String sourceIp;
+
+    /**
      * 回调目标app名称
      */
     private String targetApp;
 
     /**
-     * 回调源app的IP
+     * 回调目标url地址
      */
-    private String sourceIp;
+    private String targetUrl;
 
     /**
      * 业务类型

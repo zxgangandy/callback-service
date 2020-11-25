@@ -32,7 +32,7 @@ import static io.jingwei.base.utils.constant.ApiConstant.V_1;
 @RestController
 @RequestMapping("/callback")
 @AllArgsConstructor
-public class CallbackTaskController {
+public class CallbackTaskApiController {
     private final AddTaskReqConverter  addTaskReqConverter;
     private final AddTaskRespConverter addTaskRespConverter;
     private final ICallbackTaskService callbackTaskService;

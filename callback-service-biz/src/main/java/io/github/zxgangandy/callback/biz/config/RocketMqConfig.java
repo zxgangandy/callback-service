@@ -20,4 +20,6 @@ public class RocketMqConfig {
 
         return producer;
     }
+
+
 }
