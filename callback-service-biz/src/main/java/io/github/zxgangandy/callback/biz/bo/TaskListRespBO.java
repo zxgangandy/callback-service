@@ -84,10 +84,6 @@ public class TaskListRespBO {
      */
     private LocalDateTime ctime;
 
-    /**
-     * 更新时间
-     */
-    private LocalDateTime utime;
 
 
 }

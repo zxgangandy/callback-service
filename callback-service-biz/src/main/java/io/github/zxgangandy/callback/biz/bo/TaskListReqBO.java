@@ -1,4 +1,4 @@
-package io.github.zxgangandy.callback.model;
+package io.github.zxgangandy.callback.biz.bo;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,14 +15,8 @@ import java.time.LocalDateTime;
  * @since 2020-11-24
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-public class TaskListResp {
-
-    /**
-     * 回调任务业务id
-     */
-    private Long taskId;
+public class TaskListReqBO {
+    private String taskId;
 
     /**
      * 请求方法
@@ -59,10 +53,6 @@ public class TaskListResp {
      */
     private String bizType;
 
-    /**
-     * 回调次数
-     */
-    private Integer callCount;
 
     /**
      * 回调是否成功(成功：SUCCESS， 失败：FAILED)
@@ -80,14 +70,19 @@ public class TaskListResp {
     private String callResult;
 
     /**
-     * 创建时间
+     * 开始时间
      */
-    private LocalDateTime ctime = LocalDateTime.now();
+    private Long  startTime;
 
     /**
-     * 更新时间
+     * 结束时间
      */
-    private LocalDateTime utime;
+    private Long  endTime;
+
+
+    private Integer pageIndex = 0;
+
+    private Integer pageSize = 10;
 
 
 }

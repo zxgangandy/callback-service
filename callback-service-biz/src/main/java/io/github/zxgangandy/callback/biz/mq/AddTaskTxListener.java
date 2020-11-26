@@ -8,6 +8,7 @@ import io.github.zxgangandy.callback.biz.entity.CallbackTask;
 import io.github.zxgangandy.callback.biz.service.ICallbackTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static io.github.zxgangandy.callback.biz.constant.CallSuccessStatus.PREPARED;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 
@@ -42,7 +43,7 @@ public class AddTaskTxListener implements MQTxListener {
         return new CallbackTask()
                 .setTaskId(Long.parseLong(wrapper.getTaskId()))
                 .setCallCount(0)
-                .setCallSuccess(EMPTY)
+                .setCallSuccess(PREPARED.getStatus())
                 .setCallResult(EMPTY)
                 .setCallExpect(reqBO.getCallExpect())
                 .setBizType(reqBO.getBizType())

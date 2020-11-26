@@ -10,19 +10,20 @@ import io.github.zxgangandy.callback.biz.service.ICallbackTaskService;
 import io.jingwei.base.utils.net.HttpClientUtil;
 import io.jingwei.base.utils.tx.TxTemplateService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+import static io.github.zxgangandy.callback.biz.constant.CallSuccessStatus.FAILED;
+import static io.github.zxgangandy.callback.biz.constant.CallSuccessStatus.SUCCESS;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Component
 @Slf4j
 public class MessageProcessor implements ConcurrentlyProcessor {
-    private static final String CALL_FAILED = "FAILED";
-    private static final String CALL_SUCCESS = "SUCCESS";
 
     @Autowired
     private ICallbackTaskService callbackTaskService;
@@ -50,12 +51,18 @@ public class MessageProcessor implements ConcurrentlyProcessor {
     private void processMessage(AddTaskReqWrapperBO reqBO) throws IOException {
         final AddTaskReqBO req = reqBO.getReqBO();
         final String targetUrl = req.getTargetUrl();
-        final String reqParam = req.getReqParam();
+        final String reqParam  = req.getReqParam();
 
-        String resp = HttpClientUtil.getInstance().postSync(targetUrl, reqParam);
-        String callSuccess = CALL_FAILED;
+        String resp;
+        if (StringUtils.equalsIgnoreCase(req.getReqMethod(), "POST")) {
+            resp = HttpClientUtil.getInstance().postSync(targetUrl, reqParam);
+        } else {
+            resp = HttpClientUtil.getInstance().getSync(targetUrl, null);
+        }
+
+        String callSuccess = FAILED.getStatus();
         if (req.getCallExpect().contains(resp)) {
-            callSuccess = CALL_SUCCESS;
+            callSuccess = SUCCESS.getStatus();
         }
 
         updateSuccessResult(reqBO, resp, callSuccess);
@@ -70,7 +77,7 @@ public class MessageProcessor implements ConcurrentlyProcessor {
 
     private void updateFailedResult(AddTaskReqWrapperBO wrapper, String callResult) {
         txTemplateService.doInTransaction(() -> {
-            updateCallResult(CALL_FAILED, callResult, Long.parseLong(wrapper.getTaskId()));
+            updateCallResult(FAILED.getStatus(), callResult, Long.parseLong(wrapper.getTaskId()));
             saveLog(wrapper, callResult);
         });
     }
