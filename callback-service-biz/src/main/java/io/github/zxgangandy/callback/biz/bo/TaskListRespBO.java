@@ -22,7 +22,7 @@ public class TaskListRespBO {
     /**
      * 回调任务业务id
      */
-    private Long taskId;
+    private String taskId;
 
     /**
      * 请求方法
@@ -82,7 +82,7 @@ public class TaskListRespBO {
     /**
      * 创建时间
      */
-    private LocalDateTime ctime;
+    private long createTime;
 
 
 

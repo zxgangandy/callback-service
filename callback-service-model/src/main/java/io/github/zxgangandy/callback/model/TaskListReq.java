@@ -1,8 +1,6 @@
 package io.github.zxgangandy.callback.model;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
 /**
  * <p>
@@ -13,13 +11,7 @@ import lombok.experimental.Accessors;
  * @since 2020-11-24
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-public class TaskListResp {
-
-    /**
-     * 回调任务业务id
-     */
+public class TaskListReq {
     private String taskId;
 
     /**
@@ -57,10 +49,6 @@ public class TaskListResp {
      */
     private String bizType;
 
-    /**
-     * 回调次数
-     */
-    private Integer callCount;
 
     /**
      * 回调是否成功(成功：SUCCESS， 失败：FAILED)
@@ -78,9 +66,19 @@ public class TaskListResp {
     private String callResult;
 
     /**
-     * 创建时间
+     * 开始时间
      */
-    private long createTime;
+    private Long  startTime;
+
+    /**
+     * 结束时间
+     */
+    private Long  endTime;
+
+
+    private Integer pageIndex = 0;
+
+    private Integer pageSize = 10;
 
 
 }
