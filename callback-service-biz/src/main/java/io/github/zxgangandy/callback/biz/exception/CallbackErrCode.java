@@ -5,7 +5,7 @@ import io.jingwei.base.utils.exception.IBizErrCode;
 
 public enum CallbackErrCode implements IBizErrCode {
     TASK_NOT_FOUND("10000", "task-not-found"),
-    ILLEGAL_SIGN("12301", "illegal-sign"),
+    SEND_MSG_FAILED("10001", "send-message-failed"),
     ILLEGAL_ORDER_TYPE("12302", "illegal-order-type"),
     CREATE_OTC_ORDER_FAILED("12303", "createSimpleOrder-otc-order-failed"),
     ILLEGAL_MERCHANT_ID("12304", "illegal-merchant-id"),
