@@ -4,17 +4,18 @@ import io.andy.rocketmq.wrapper.core.producer.LocalTxState;
 import io.andy.rocketmq.wrapper.core.producer.listener.MQTxListener;
 import io.github.zxgangandy.callback.biz.bo.AddTaskReqBO;
 import io.github.zxgangandy.callback.biz.bo.AddTaskReqWrapperBO;
+import io.github.zxgangandy.callback.biz.converter.TaskAddReqConverter;
 import io.github.zxgangandy.callback.biz.entity.CallbackTask;
 import io.github.zxgangandy.callback.biz.service.ICallbackTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static io.github.zxgangandy.callback.biz.constant.CallSuccessStatus.PREPARED;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 
 public class AddTaskTxListener implements MQTxListener {
     @Autowired
     private ICallbackTaskService callbackTaskService;
+
+    @Autowired
+    private TaskAddReqConverter  taskAddReqConverter;
 
     @Override
     public LocalTxState executeTransaction(Object req) {
@@ -33,25 +34,24 @@ public class AddTaskTxListener implements MQTxListener {
 
     @Override
     public LocalTxState checkTransaction(Object body) {
+        AddTaskReqWrapperBO wrapper = (AddTaskReqWrapperBO) body;
+        final long taskId = Long.parseLong(wrapper.getTaskId());
+
+        if (!callbackTaskService.getByTaskId(taskId).isPresent()) {
+            return LocalTxState.ROLLBACK;
+        }
 
         return LocalTxState.COMMIT;
     }
 
 
-    private static CallbackTask createCallbackTask(AddTaskReqWrapperBO wrapper) {
+    private CallbackTask createCallbackTask(AddTaskReqWrapperBO wrapper) {
         AddTaskReqBO reqBO = wrapper.getReqBO();
-        return new CallbackTask()
-                .setTaskId(Long.parseLong(wrapper.getTaskId()))
-                .setCallCount(0)
-                .setCallSuccess(PREPARED.getStatus())
-                .setCallResult(EMPTY)
-                .setCallExpect(reqBO.getCallExpect())
-                .setBizType(reqBO.getBizType())
-                .setReqMethod(reqBO.getReqMethod())
-                .setReqParam(reqBO.getReqParam())
-                .setSourceApp(reqBO.getSourceApp())
-                .setSourceIp(reqBO.getSourceIp())
-                .setTargetApp(reqBO.getTargetApp());
+
+        CallbackTask callbackTask = taskAddReqConverter.to(reqBO);
+        callbackTask.setTaskId(Long.parseLong(wrapper.getTaskId()));
+
+        return callbackTask;
     }
 
 }
