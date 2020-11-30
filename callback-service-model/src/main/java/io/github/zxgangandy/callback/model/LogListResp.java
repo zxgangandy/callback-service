@@ -1,4 +1,4 @@
-package io.github.zxgangandy.callback.biz.bo;
+package io.github.zxgangandy.callback.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class TaskLogRespBO {
+public class LogListResp {
 
     /**
      * 回调任务业务id
@@ -81,7 +81,6 @@ public class TaskLogRespBO {
      * 创建时间
      */
     private long createTime;
-
 
 
 }

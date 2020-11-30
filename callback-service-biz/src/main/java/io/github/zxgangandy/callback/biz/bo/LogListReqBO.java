@@ -1,4 +1,4 @@
-package io.github.zxgangandy.callback.model;
+package io.github.zxgangandy.callback.biz.bo;
 
 import lombok.Data;
 
@@ -11,7 +11,7 @@ import lombok.Data;
  * @since 2020-11-24
  */
 @Data
-public class TaskListReq {
+public class LogListReqBO {
     private String taskId;
 
     /**
@@ -49,17 +49,6 @@ public class TaskListReq {
      */
     private String bizType;
 
-
-    /**
-     * 回调是否成功(成功：SUCCESS， 失败：FAILED)
-     */
-    private String callSuccess;
-
-    /**
-     * 回调期望值
-     */
-    private String callExpect;
-
     /**
      * 回调实际值
      */
@@ -76,9 +65,9 @@ public class TaskListReq {
     private Long  endTime;
 
 
-    private Long pageIndex = 0L;
+    private Integer pageIndex = 0;
 
-    private Long pageSize = 10L;
+    private Integer pageSize = 10;
 
 
 }
