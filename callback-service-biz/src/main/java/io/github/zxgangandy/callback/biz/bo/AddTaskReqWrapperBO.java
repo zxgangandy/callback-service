@@ -1,6 +1,5 @@
 package io.github.zxgangandy.callback.biz.bo;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -9,4 +8,6 @@ import lombok.experimental.Accessors;
 public class AddTaskReqWrapperBO {
     private AddTaskReqBO reqBO;
     private String taskId;
+    private String callResult;
+    private String callSuccess;
 }

@@ -63,6 +63,11 @@ public class LogListRespBO {
     private String callResult;
 
     /**
+     * 回调是否成功(成功：SUCCESS， 失败：FAILED)
+     */
+    private String callSuccess;
+
+    /**
      * 创建时间
      */
     private long createTime;

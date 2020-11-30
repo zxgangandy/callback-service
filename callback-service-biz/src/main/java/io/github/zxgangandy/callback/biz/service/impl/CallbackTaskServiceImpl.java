@@ -98,13 +98,15 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
         } else {
             resp = HttpClientUtil.getInstance().getSync(targetUrl, null);
         }
+        wrapper.setCallResult(resp);
 
         String callSuccess = FAILED.getStatus();
         if (req.getCallExpect().contains(resp)) {
             callSuccess = SUCCESS.getStatus();
         }
+        wrapper.setCallSuccess(callSuccess);
 
-        execSuccessResult(wrapper, resp, callSuccess);
+        execSuccessResult(wrapper);
     }
 
     @Override
@@ -114,14 +116,10 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
         if (!opt.isPresent()) {
             throw new BizErr(TASK_NOT_FOUND);
         } else if(checkRetryNecessary(opt.get())) {
-            //已经成功回调到终态的任务不能再触发，直接返回
-            return true;
+            return true; //已经成功回调到终态的任务不能再触发，直接返回
         }
 
-        AddTaskReqBO req = taskAddReqConverter.from(opt.get());
-        AddTaskReqWrapperBO wrapper = new AddTaskReqWrapperBO();
-        wrapper.setReqBO(req).setTaskId(String.valueOf(taskId));
-
+        AddTaskReqWrapperBO wrapper = createRetryReqWrapper(opt, taskId);
         try {
             execTask(wrapper);
         } catch (IOException e) {
@@ -133,21 +131,25 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
     }
 
     @Override
-    public void execSuccessResult(AddTaskReqWrapperBO wrapper, String callResult, String callSuccess) {
+    public void execSuccessResult(AddTaskReqWrapperBO wrapper) {
         txTemplateService.doInTransaction(() -> {
-            boolean result = updateCallResult(callSuccess, callResult, Long.parseLong(wrapper.getTaskId()));
+            boolean result = updateCallResult(wrapper);
             if (result) {
-                saveLog(wrapper, callResult);
+                saveLog(wrapper);
+            } else {
+                log.error("execSuccessResult=>updateCallResult failed, wrapper={}", wrapper);
             }
         });
     }
 
     @Override
-    public void execFailedResult(AddTaskReqWrapperBO wrapper, String callResult) {
+    public void execFailedResult(AddTaskReqWrapperBO wrapper) {
         txTemplateService.doInTransaction(() -> {
-            boolean result = updateCallResult(FAILED.getStatus(), callResult, Long.parseLong(wrapper.getTaskId()));
+            boolean result = updateCallResult(wrapper);
             if (result) {
-                saveLog(wrapper, callResult);
+                saveLog(wrapper);
+            } else {
+                log.error("execFailedResult=>updateCallResult failed, wrapper={}", wrapper);
             }
         });
     }
@@ -176,9 +178,8 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
      * @return: io.github.zxgangandy.callback.biz.bo.AddTaskReqWrapperBO
      */
     private AddTaskReqWrapperBO createReqWrapper(AddTaskReqBO reqBO) {
-        final String taskId = String.valueOf(defaultUidGenerator.getUID());
-        final AddTaskReqWrapperBO wrapper = new AddTaskReqWrapperBO()
-                .setReqBO(reqBO).setTaskId(taskId);
+        String taskId = String.valueOf(defaultUidGenerator.getUID());
+        AddTaskReqWrapperBO wrapper = new AddTaskReqWrapperBO().setReqBO(reqBO).setTaskId(taskId);
 
         return wrapper;
     }
@@ -195,6 +196,20 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
         } else {
             return reqBO.getSourceApp() + "-" + reqBO.getBizType();
         }
+    }
+
+    /**
+     * @Description: 构建retry task请求的wrapper对象
+     * @date 2020-11-30
+     * @Param opt:
+     * @Param taskId:
+     * @return: io.github.zxgangandy.callback.biz.bo.AddTaskReqWrapperBO
+     */
+    private AddTaskReqWrapperBO createRetryReqWrapper(Optional<CallbackTask> opt, long taskId) {
+        AddTaskReqBO req = taskAddReqConverter.from(opt.get());
+        AddTaskReqWrapperBO wrapper = new AddTaskReqWrapperBO();
+        wrapper.setReqBO(req).setTaskId(String.valueOf(taskId));
+        return wrapper;
     }
 
     /**
@@ -247,13 +262,13 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
      * @Param taskId:
      * @return: void
      */
-    private boolean updateCallResult(String callSuccess, String resp, long taskId) {
+    private boolean updateCallResult(AddTaskReqWrapperBO wrapper) {
         String[] successList = new String[]{SUCCESS.getStatus(), PREPARED.getStatus()};
         boolean result = lambdaUpdate()
-                .set(CallbackTask::getCallSuccess, callSuccess)
-                .set(CallbackTask::getCallResult, resp)
+                .set(CallbackTask::getCallSuccess, wrapper.getCallSuccess())
+                .set(CallbackTask::getCallResult, wrapper.getCallResult())
                 .setSql("call_count = call_count + 1")
-                .eq(CallbackTask::getTaskId, taskId)
+                .eq(CallbackTask::getTaskId, Long.parseLong(wrapper.getTaskId()))
                 .in(CallbackTask::getCallSuccess, Arrays.asList(successList))
                 .update();
 
@@ -267,10 +282,8 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
      * @Param callResult:
      * @return: void
      */
-    private void saveLog(AddTaskReqWrapperBO wrapper, String callResult) {
+    private void saveLog(AddTaskReqWrapperBO wrapper) {
         CallbackLog callbackLog = wrapper2LogConverter.to(wrapper);
-        callbackLog.setCallResult(callResult);
-
         callbackLogService.save(callbackLog);
     }
 

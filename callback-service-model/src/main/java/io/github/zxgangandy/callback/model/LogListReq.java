@@ -56,11 +56,6 @@ public class LogListReq {
     private String callSuccess;
 
     /**
-     * 回调期望值
-     */
-    private String callExpect;
-
-    /**
      * 回调实际值
      */
     private String callResult;

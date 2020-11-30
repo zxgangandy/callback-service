@@ -55,6 +55,11 @@ public class LogListReqBO {
     private String callResult;
 
     /**
+     * 回调是否成功(成功：SUCCESS， 失败：FAILED)
+     */
+    private String callSuccess;
+
+    /**
      * 开始时间
      */
     private Long  startTime;

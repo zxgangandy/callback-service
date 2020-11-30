@@ -57,7 +57,7 @@ public interface ICallbackTaskService extends IService<CallbackTask> {
      * @Param callResult:
      * @return: void
      */
-    void execFailedResult(AddTaskReqWrapperBO wrapper, String callResult);
+    void execFailedResult(AddTaskReqWrapperBO wrapper);
 
     /**
      * @Description: 执行任务成功后的操作
@@ -67,7 +67,7 @@ public interface ICallbackTaskService extends IService<CallbackTask> {
      * @Param callSuccess:
      * @return: void
      */
-    void execSuccessResult(AddTaskReqWrapperBO wrapper, String callResult, String callSuccess);
+    void execSuccessResult(AddTaskReqWrapperBO wrapper);
 
     /**
      * @Description: 根据条件获取task列表

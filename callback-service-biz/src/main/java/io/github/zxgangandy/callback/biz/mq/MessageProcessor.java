@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+import static io.github.zxgangandy.callback.biz.constant.CallSuccessStatus.FAILED;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Component
@@ -24,11 +25,15 @@ public class MessageProcessor implements ConcurrentlyProcessor {
     @Override
     public ConsumeConcurrentlyStatus process(Object messageBody) {
         AddTaskReqWrapperBO wrapper = (AddTaskReqWrapperBO) (messageBody);
+
         try {
             processMessage(wrapper);
         } catch (Exception ex) {
             log.error("processMessage failed, ex={}", ex);
-            callbackTaskService.execFailedResult(wrapper, EMPTY);
+            wrapper.setCallSuccess(FAILED.getStatus());
+            wrapper.setCallResult(EMPTY);
+
+            callbackTaskService.execFailedResult(wrapper);
             return ConsumeConcurrentlyStatus.RECONSUME_LATER;
         }
 
@@ -38,7 +43,5 @@ public class MessageProcessor implements ConcurrentlyProcessor {
     private void processMessage(AddTaskReqWrapperBO reqBO) throws IOException {
         callbackTaskService.execTask(reqBO);
     }
-
-
 
 }

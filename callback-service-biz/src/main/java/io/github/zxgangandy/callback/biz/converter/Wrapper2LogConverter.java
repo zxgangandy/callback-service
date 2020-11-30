@@ -29,6 +29,8 @@ public interface Wrapper2LogConverter extends BasicObjectMapper<AddTaskReqWrappe
                 .setSourceApp(req.getSourceApp())
                 .setSourceIp(req.getSourceIp())
                 .setTargetApp(req.getTargetApp())
-                .setTargetUrl(req.getTargetUrl());
+                .setTargetUrl(req.getTargetUrl())
+                .setCallSuccess(source.getCallSuccess())
+                .setCallResult(source.getCallResult());
     }
 }
