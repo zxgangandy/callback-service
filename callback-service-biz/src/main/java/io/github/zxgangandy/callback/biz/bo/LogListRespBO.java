@@ -58,21 +58,6 @@ public class LogListRespBO {
     private String bizType;
 
     /**
-     * 回调次数
-     */
-    private Integer callCount;
-
-    /**
-     * 回调是否成功(成功：SUCCESS， 失败：FAILED)
-     */
-    private String callSuccess;
-
-    /**
-     * 回调期望值
-     */
-    private String callExpect;
-
-    /**
      * 回调实际值
      */
     private String callResult;
