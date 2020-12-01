@@ -2,8 +2,10 @@ package io.github.zxgangandy.callback.biz.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
 import io.github.zxgangandy.callback.biz.bo.LogListReqBO;
 import io.github.zxgangandy.callback.biz.bo.LogListRespBO;
+import io.github.zxgangandy.callback.biz.bo.TaskTotalInfoRespBO;
 import io.github.zxgangandy.callback.biz.converter.LogListRespConverter;
 import io.github.zxgangandy.callback.biz.entity.CallbackLog;
 import io.github.zxgangandy.callback.biz.mapper.CallbackLogMapper;
@@ -14,6 +16,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.CompletableFuture;
+
+import static io.github.zxgangandy.callback.biz.constant.CallSuccessStatus.SUCCESS;
 import static io.jingwei.base.utils.time.DateUtils.getSecondToLocalDateTime;
 
 
@@ -45,6 +50,38 @@ public class CallbackLogServiceImpl extends ServiceImpl<CallbackLogMapper, Callb
         pageResult.setRecords(logListRespConverter.to(queryResult.getRecords()));
 
         return pageResult;
+    }
+
+    @Override
+    public long getTotal(TaskTotalInfoRespBO respBO) {
+        Integer count =  lambdaQuery().count();
+        respBO.setTotal(count);
+        return count;
+    }
+
+    @Override
+    public long getSuccessTotal(TaskTotalInfoRespBO respBO) {
+        QueryWrapper<CallbackLog> wrapper = new QueryWrapper<>();
+        wrapper.eq("call_success", SUCCESS.getStatus());
+        Integer count = SqlHelper.retCount(lambdaQuery().getBaseMapper().selectCount(wrapper));
+        respBO.setSuccess(respBO.getSuccess());
+        return count;
+    }
+
+    @Override
+    public long getFailedTotal(long total, long success) {
+        return total - success;
+    }
+
+    @Override
+    public TaskTotalInfoRespBO getTotalTaskInfo() {
+        TaskTotalInfoRespBO respBO = new TaskTotalInfoRespBO();
+        CompletableFuture<Long> totalFuture = CompletableFuture.completedFuture(getTotal(respBO));
+        CompletableFuture<Long> successFuture = CompletableFuture.completedFuture(getSuccessTotal(respBO));
+        CompletableFuture.allOf(totalFuture, successFuture).join();
+
+        respBO.setFailed(getFailedTotal(respBO.getTotal(), respBO.getSuccess()));
+        return respBO;
     }
 
 

@@ -3,6 +3,7 @@ package io.github.zxgangandy.callback.biz.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.github.zxgangandy.callback.biz.bo.LogListReqBO;
 import io.github.zxgangandy.callback.biz.bo.LogListRespBO;
+import io.github.zxgangandy.callback.biz.bo.TaskTotalInfoRespBO;
 import io.github.zxgangandy.callback.biz.entity.CallbackLog;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -22,4 +23,12 @@ public interface ICallbackLogService extends IService<CallbackLog> {
      * @return: Page<io.github.zxgangandy.callback.biz.bo.LogListRespBO>
      */
     Page<LogListRespBO> getLogList(LogListReqBO req);
+
+    long getTotal(TaskTotalInfoRespBO resp);
+
+    long getSuccessTotal(TaskTotalInfoRespBO resp);
+
+    long getFailedTotal(long total, long success);
+
+    TaskTotalInfoRespBO getTotalTaskInfo();
 }

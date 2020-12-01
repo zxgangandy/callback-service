@@ -3,7 +3,7 @@ package io.github.zxgangandy.callback.model;
 import lombok.Data;
 
 @Data
-public class TaskInfoResp {
+public class TaskTotalInfoResp {
     private long total;
 
     private long success;

@@ -20,8 +20,6 @@ public class MessageProcessor implements ConcurrentlyProcessor {
     @Autowired
     private ICallbackTaskService callbackTaskService;
 
-
-
     @Override
     public ConsumeConcurrentlyStatus process(Object messageBody) {
         AddTaskReqWrapperBO wrapper = (AddTaskReqWrapperBO) (messageBody);

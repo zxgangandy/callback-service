@@ -2,24 +2,15 @@ package io.github.zxgangandy.callback.rest.controller;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.github.zxgangandy.callback.biz.bo.LogListReqBO;
-import io.github.zxgangandy.callback.biz.bo.LogListRespBO;
-import io.github.zxgangandy.callback.biz.bo.TaskListReqBO;
-import io.github.zxgangandy.callback.biz.bo.TaskListRespBO;
+import io.github.zxgangandy.callback.biz.bo.*;
 import io.github.zxgangandy.callback.biz.service.ICallbackLogService;
 import io.github.zxgangandy.callback.biz.service.ICallbackTaskService;
 import io.github.zxgangandy.callback.model.*;
-import io.github.zxgangandy.callback.rest.converter.LogListReqConverter;
-import io.github.zxgangandy.callback.rest.converter.LogListRespConverter;
-import io.github.zxgangandy.callback.rest.converter.TaskListReqConverter;
-import io.github.zxgangandy.callback.rest.converter.TaskListRespConverter;
+import io.github.zxgangandy.callback.rest.converter.*;
 import io.jingwei.base.utils.model.P;
 import io.jingwei.base.utils.model.R;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -39,12 +30,13 @@ import static io.jingwei.base.utils.constant.ApiConstant.V_1;
 @RequestMapping("/web/callback")
 @AllArgsConstructor
 public class CallbackTaskWebController {
-    private final ICallbackTaskService  callbackTaskService;
-    private final ICallbackLogService   callbackLogService;
-    private final TaskListReqConverter  taskListReqConverter;
-    private final TaskListRespConverter taskListRespConverter;
-    private final LogListReqConverter   logListReqConverter;
-    private final LogListRespConverter  logListRespConverter;
+    private final ICallbackTaskService       callbackTaskService;
+    private final ICallbackLogService        callbackLogService;
+    private final TaskListReqConverter       taskListReqConverter;
+    private final TaskListRespConverter      taskListRespConverter;
+    private final LogListReqConverter        logListReqConverter;
+    private final LogListRespConverter       logListRespConverter;
+    private final TaskTotalInfoRespConverter taskTotalInfoRespConverter;
 
     @PostMapping(V_1 +"/task_list")
     public R<P<TaskListResp>> getTaskList(@RequestBody @Valid TaskListReq req) {
@@ -71,6 +63,13 @@ public class CallbackTaskWebController {
         boolean retryResult    = callbackTaskService.retryTask(taskId);
         RetryTaskResp taskResp = new RetryTaskResp().setResult(retryResult);
         return R.ok(taskResp);
+    }
+
+    @GetMapping(V_1 +"/total_info")
+    public R<TaskTotalInfoResp> totalInfo() {
+        TaskTotalInfoRespBO respBO = callbackLogService.getTotalTaskInfo();
+        TaskTotalInfoResp resp     = taskTotalInfoRespConverter.to(respBO);
+        return R.ok(resp);
     }
 
 }
