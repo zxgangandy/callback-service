@@ -191,11 +191,7 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
      * @return: java.lang.String
      */
     private static String createMqTopic(AddTaskReqBO reqBO) {
-        if (StringUtils.isNotEmpty(reqBO.getTargetApp())) {
-            return reqBO.getSourceApp() + "-" + reqBO.getTargetApp() + "-" + reqBO.getBizType();
-        } else {
-            return reqBO.getSourceApp() + "-" + reqBO.getBizType();
-        }
+        return reqBO.getSourceApp() + "_" + reqBO.getTargetApp() + "_" + reqBO.getBizType();
     }
 
     /**

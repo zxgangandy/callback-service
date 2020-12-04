@@ -24,11 +24,36 @@ public interface ICallbackLogService extends IService<CallbackLog> {
      */
     Page<LogListRespBO> getLogList(LogListReqBO req);
 
+    /**
+     * @Description: 获取总的回调次数
+     * @date 2020-12-02
+     * @Param resp:
+     * @return: long
+     */
     long getTotal(TaskTotalInfoRespBO resp);
 
+    /**
+     * @Description: 获取总成功的回调次数
+     * @date 2020-12-02
+     * @Param resp:
+     * @return: long
+     */
     long getSuccessTotal(TaskTotalInfoRespBO resp);
 
+    /**
+     * @Description: 获取总失败的回调次数
+     * @date 2020-12-02
+     * @Param total:
+     * @Param success:
+     * @return: long
+     */
     long getFailedTotal(long total, long success);
 
+    /**
+     * @Description: 获取总的回调信息（包括总回调次数，总成功、总失败数）
+     * @date 2020-12-02
+     *
+     * @return: io.github.zxgangandy.callback.biz.bo.TaskTotalInfoRespBO
+     */
     TaskTotalInfoRespBO getTotalTaskInfo();
 }
