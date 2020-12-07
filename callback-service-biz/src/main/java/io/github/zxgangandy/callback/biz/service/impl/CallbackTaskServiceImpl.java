@@ -8,6 +8,7 @@ import io.github.zxgangandy.callback.biz.converter.TaskListRespConverter;
 import io.github.zxgangandy.callback.biz.converter.Wrapper2LogConverter;
 import io.github.zxgangandy.callback.biz.entity.CallbackLog;
 import io.github.zxgangandy.callback.biz.service.ICallbackLogService;
+import io.github.zxgangandy.callback.biz.service.IMqHandlerService;
 import io.jingwei.base.idgen.UidGenerator;
 import io.andy.rocketmq.wrapper.core.producer.RMProducer;
 import io.github.zxgangandy.callback.biz.entity.CallbackTask;
@@ -47,22 +48,20 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
 
     @Autowired
     private RMProducer            defaultProducer;
-
     @Autowired
     private UidGenerator          defaultUidGenerator;
 
     @Autowired
     private ICallbackLogService   callbackLogService;
-
+    @Autowired
+    private IMqHandlerService     mqHandlerService;
     @Autowired
     private TxTemplateService     txTemplateService;
 
     @Autowired
     private TaskListRespConverter taskListRespConverter;
-
     @Autowired
     private Wrapper2LogConverter  wrapper2LogConverter;
-
     @Autowired
     private TaskAddReqConverter   taskAddReqConverter;
 
@@ -75,6 +74,10 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
     public AddTaskRespBO addTask(AddTaskReqBO reqBO) {
         final AddTaskReqWrapperBO wrapper = createReqWrapper(reqBO);
         final String messageTopic = createMqTopic(reqBO);
+
+        if (!mqHandlerService.exists(messageTopic)) {
+            throw new BizErr(MSG_TOPIC_NOT_REG);
+        }
 
         try {
             defaultProducer.sendTransactional(messageTopic, wrapper, wrapper);
@@ -191,7 +194,7 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
      * @return: java.lang.String
      */
     private static String createMqTopic(AddTaskReqBO reqBO) {
-        return reqBO.getSourceApp() + "_" + reqBO.getTargetApp() + "_" + reqBO.getBizType();
+        return reqBO.getSourceApp() + "-" + reqBO.getTargetApp() + "-" + reqBO.getBizType();
     }
 
     /**

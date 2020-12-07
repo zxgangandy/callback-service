@@ -7,7 +7,7 @@ public enum CallbackErrCode implements IBizErrCode {
     TASK_NOT_FOUND("10000", "task-not-found"),
     SEND_MSG_FAILED("10001", "send-message-failed"),
     CALL_BACK_FAILED("10002", "call-third-party-failed"),
-    CREATE_OTC_ORDER_FAILED("12303", "createSimpleOrder-otc-order-failed"),
+    MSG_TOPIC_NOT_REG("10003", "message-topic-not-register"),
     ILLEGAL_MERCHANT_ID("12304", "illegal-merchant-id"),
     MERCHANT_DISABLED("12305", "merchant-disabled"),
     MERCHANT_NOT_INIT("12306", "merchant-not-init"),
