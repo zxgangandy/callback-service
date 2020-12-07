@@ -40,7 +40,7 @@ public interface ICallbackTaskService extends IService<CallbackTask> {
      * @Param wrapper:
      * @return: void
      */
-    void execTask(AddTaskReqWrapperBO wrapper) throws IOException;
+    boolean execTask(AddTaskReqWrapperBO wrapper) throws IOException;
 
     /**
      * @Description: 重新执行task
@@ -49,25 +49,6 @@ public interface ICallbackTaskService extends IService<CallbackTask> {
      * @return: void
      */
     boolean retryTask(long taskId);
-
-    /**
-     * @Description: 执行任务失败后的操作
-     * @date 2020-11-27
-     * @Param wrapper:
-     * @Param callResult:
-     * @return: void
-     */
-    void execFailedResult(AddTaskReqWrapperBO wrapper);
-
-    /**
-     * @Description: 执行任务成功后的操作
-     * @date 2020-11-27
-     * @Param wrapper:
-     * @Param callResult:
-     * @Param callSuccess:
-     * @return: void
-     */
-    void execSuccessResult(AddTaskReqWrapperBO wrapper);
 
     /**
      * @Description: 根据条件获取task列表

@@ -34,6 +34,7 @@ import java.util.Optional;
 import static io.github.zxgangandy.callback.biz.constant.CallSuccessStatus.*;
 import static io.github.zxgangandy.callback.biz.exception.CallbackErrCode.*;
 import static io.jingwei.base.utils.time.DateUtils.getSecondToLocalDateTime;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 
 /**
@@ -98,7 +99,7 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
     }
 
     @Override
-    public void execTask(AddTaskReqWrapperBO wrapper) throws IOException {
+    public boolean execTask(AddTaskReqWrapperBO wrapper) throws IOException {
         final AddTaskReqBO req = wrapper.getReqBO();
         final String targetUrl = req.getTargetUrl();
         final String reqParam  = req.getReqParam();
@@ -109,23 +110,11 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
         } else {
             resp = HttpClientUtil.getInstance().getSync(targetUrl, null);
         }
-        wrapper.setCallResult(resp);
 
-        if (resp == null || resp.length() == 0 || resp.length() > req.getCallExpect().length()) {
-            log.error("resp is empty, or length than expect response");
-            throw new BizErr(RESULT_NOT_EXPECTED);
-        }
+        fillReqWrapper(wrapper, resp, req);
+        execTaskComplete(wrapper);
 
-        String callSuccess;
-        if (req.getCallExpect().contains(resp)) {
-            callSuccess = SUCCESS.getStatus();
-        } else {
-            throw new BizErr(RESULT_NOT_EXPECTED);
-        }
-
-        wrapper.setCallSuccess(callSuccess);
-
-        execSuccessResult(wrapper);
+        return Objects.equals(wrapper.getCallSuccess(), SUCCESS.getStatus());
     }
 
     @Override
@@ -147,30 +136,6 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
         }
 
         return true;
-    }
-
-    @Override
-    public void execSuccessResult(AddTaskReqWrapperBO wrapper) {
-        txTemplateService.doInTransaction(() -> {
-            boolean result = updateCallResult(wrapper);
-            if (result) {
-                saveLog(wrapper);
-            } else {
-                log.error("execSuccessResult=>updateCallResult failed, wrapper={}", wrapper);
-            }
-        });
-    }
-
-    @Override
-    public void execFailedResult(AddTaskReqWrapperBO wrapper) {
-        txTemplateService.doInTransaction(() -> {
-            boolean result = updateCallResult(wrapper);
-            if (result) {
-                saveLog(wrapper);
-            } else {
-                log.error("execFailedResult=>updateCallResult failed, wrapper={}", wrapper);
-            }
-        });
     }
 
     @Override
@@ -269,6 +234,17 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
         return wrapper;
     }
 
+    private void execTaskComplete(AddTaskReqWrapperBO wrapper) {
+        txTemplateService.doInTransaction(() -> {
+            boolean result = updateCallResult(wrapper);
+            if (result) {
+                saveLog(wrapper);
+            } else {
+                log.error("execTaskComplete=>updateCallResult failed, wrapper={}", wrapper);
+            }
+        });
+    }
+
     /**
      * @Description: 更新调用结果的状态到终态
      * @date 2020-11-27
@@ -302,8 +278,29 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
         callbackLogService.save(callbackLog);
     }
 
+    private void fillReqWrapper(AddTaskReqWrapperBO wrapper, String resp, AddTaskReqBO req) {
+        if (invalidResponse(resp, req.getCallExpect())) {
+            log.warn("resp is empty, or length than expect");
+
+            wrapper.setCallResult(EMPTY);
+            wrapper.setCallSuccess(FAILED.getStatus());
+        } else if (req.getCallExpect().contains(resp)) {
+            wrapper.setCallResult(resp);
+            wrapper.setCallSuccess(SUCCESS.getStatus());
+        } else {
+            log.warn("resp not in expect results");
+
+            wrapper.setCallResult(resp);
+            wrapper.setCallSuccess(FAILED.getStatus());
+        }
+    }
+
     private boolean checkRetryNecessary(CallbackTask callbackTask) {
         return Objects.equals(callbackTask.getCallSuccess(), SUCCESS.getStatus());
+    }
+
+    private boolean invalidResponse(String resp, String callExpect) {
+        return resp == null || resp.length() == 0 || resp.length() > callExpect.length();
     }
 
 }

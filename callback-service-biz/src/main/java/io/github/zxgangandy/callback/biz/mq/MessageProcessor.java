@@ -23,21 +23,19 @@ public class MessageProcessor implements ConcurrentlyProcessor<AddTaskReqWrapper
     @Override
     public ConsumeConcurrentlyStatus process(AddTaskReqWrapperBO wrapper) {
         try {
-            processMessage(wrapper);
+            if (!processMessage(wrapper)) {
+                return ConsumeConcurrentlyStatus.RECONSUME_LATER;
+            }
         } catch (Exception ex) {
             log.error("processMessage failed, ex={}", ex);
-            wrapper.setCallSuccess(FAILED.getStatus());
-            wrapper.setCallResult(EMPTY);
-
-            callbackTaskService.execFailedResult(wrapper);
             return ConsumeConcurrentlyStatus.RECONSUME_LATER;
         }
 
         return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
     }
 
-    private void processMessage(AddTaskReqWrapperBO reqBO) throws IOException {
-        callbackTaskService.execTask(reqBO);
+    private boolean processMessage(AddTaskReqWrapperBO reqBO) throws IOException {
+        return callbackTaskService.execTask(reqBO);
     }
 
 }
