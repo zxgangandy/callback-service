@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Data
 @ConfigurationProperties(prefix = "rocketmq")
 public class RocketMQProperties {
-    private String nameServer;
+    private String nameSrvAddr;
 
 
     private RocketMQProperties.Producer producer = new RocketMQProperties.Producer();

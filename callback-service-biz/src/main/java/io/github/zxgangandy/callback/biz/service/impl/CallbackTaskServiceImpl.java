@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.github.zxgangandy.callback.biz.bo.*;
 import io.github.zxgangandy.callback.biz.converter.TaskAddReqConverter;
-import io.github.zxgangandy.callback.biz.converter.TaskListRespConverter;
+import io.github.zxgangandy.callback.biz.converter.TaskListRespBOConverter;
 import io.github.zxgangandy.callback.biz.converter.Wrapper2LogConverter;
 import io.github.zxgangandy.callback.biz.entity.CallbackLog;
 import io.github.zxgangandy.callback.biz.service.ICallbackLogService;
@@ -21,6 +21,8 @@ import io.jingwei.base.utils.tx.TxTemplateService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.client.producer.LocalTransactionState;
+import org.apache.rocketmq.client.producer.TransactionSendResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,23 +49,23 @@ import static io.jingwei.base.utils.time.DateUtils.getSecondToLocalDateTime;
 public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, CallbackTask> implements ICallbackTaskService {
 
     @Autowired
-    private RMProducer            defaultProducer;
+    private RMProducer              defaultProducer;
     @Autowired
-    private UidGenerator          defaultUidGenerator;
+    private UidGenerator            defaultUidGenerator;
 
     @Autowired
-    private ICallbackLogService   callbackLogService;
+    private ICallbackLogService     callbackLogService;
     @Autowired
-    private IMqHandlerService     mqHandlerService;
+    private IMqHandlerService       mqHandlerService;
     @Autowired
-    private TxTemplateService     txTemplateService;
+    private TxTemplateService       txTemplateService;
 
     @Autowired
-    private TaskListRespConverter taskListRespConverter;
+    private TaskListRespBOConverter taskListRespBOConverter;
     @Autowired
-    private Wrapper2LogConverter  wrapper2LogConverter;
+    private Wrapper2LogConverter    wrapper2LogConverter;
     @Autowired
-    private TaskAddReqConverter   taskAddReqConverter;
+    private TaskAddReqConverter     taskAddReqConverter;
 
     @Override
     public Optional<CallbackTask> getByTaskId(long taskId) {
@@ -80,7 +82,13 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
         }
 
         try {
-            defaultProducer.sendTransactional(messageTopic, wrapper, wrapper);
+            TransactionSendResult result = (TransactionSendResult) defaultProducer
+                    .sendTransactional(messageTopic, wrapper, wrapper);
+            if (result == null
+                    || result.getLocalTransactionState().equals(LocalTransactionState.ROLLBACK_MESSAGE)
+                    || result.getLocalTransactionState().equals(LocalTransactionState.UNKNOW)) {
+                throw new BizErr(SEND_MSG_FAILED);
+            }
         } catch (MQClientException e) {
             log.error("Mq send message error={}", e);
             throw new BizErr(SEND_MSG_FAILED);
@@ -103,10 +111,18 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
         }
         wrapper.setCallResult(resp);
 
-        String callSuccess = FAILED.getStatus();
+        if (resp == null || resp.length() == 0 || resp.length() > req.getCallExpect().length()) {
+            log.error("resp is empty, or length than expect response");
+            throw new BizErr(RESULT_NOT_EXPECTED);
+        }
+
+        String callSuccess;
         if (req.getCallExpect().contains(resp)) {
             callSuccess = SUCCESS.getStatus();
+        } else {
+            throw new BizErr(RESULT_NOT_EXPECTED);
         }
+
         wrapper.setCallSuccess(callSuccess);
 
         execSuccessResult(wrapper);
@@ -169,7 +185,7 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
         pageResult.setCurrent(queryResult.getCurrent());
         pageResult.setSize(queryResult.getSize());
         pageResult.setPages(queryResult.getPages());
-        pageResult.setRecords(taskListRespConverter.to(queryResult.getRecords()));
+        pageResult.setRecords(taskListRespBOConverter.to(queryResult.getRecords()));
 
         return pageResult;
     }

@@ -49,4 +49,9 @@ public class CallbackTaskApiController {
     }
 
 
+    @PostMapping(V_1 +"/hello")
+    public String hello() {
+        return "hello";
+    }
+
 }

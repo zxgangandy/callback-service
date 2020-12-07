@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
 import io.github.zxgangandy.callback.biz.bo.LogListReqBO;
 import io.github.zxgangandy.callback.biz.bo.LogListRespBO;
 import io.github.zxgangandy.callback.biz.bo.TaskTotalInfoRespBO;
-import io.github.zxgangandy.callback.biz.converter.LogListRespConverter;
+import io.github.zxgangandy.callback.biz.converter.LogListRespBOConverter;
 import io.github.zxgangandy.callback.biz.entity.CallbackLog;
 import io.github.zxgangandy.callback.biz.mapper.CallbackLogMapper;
 import io.github.zxgangandy.callback.biz.service.ICallbackLogService;
@@ -35,7 +35,7 @@ import static io.jingwei.base.utils.time.DateUtils.getSecondToLocalDateTime;
 public class CallbackLogServiceImpl extends ServiceImpl<CallbackLogMapper, CallbackLog> implements ICallbackLogService {
 
     @Autowired
-    private LogListRespConverter logListRespConverter;
+    private LogListRespBOConverter logListRespBOConverter;
     @Override
     public Page<LogListRespBO> getLogList(LogListReqBO req) {
         Page<CallbackLog> page = new Page<>(req.getPageIndex(), req.getPageSize());
@@ -47,7 +47,7 @@ public class CallbackLogServiceImpl extends ServiceImpl<CallbackLogMapper, Callb
         pageResult.setCurrent(queryResult.getCurrent());
         pageResult.setSize(queryResult.getSize());
         pageResult.setTotal(queryResult.getTotal());
-        pageResult.setRecords(logListRespConverter.to(queryResult.getRecords()));
+        pageResult.setRecords(logListRespBOConverter.to(queryResult.getRecords()));
 
         return pageResult;
     }

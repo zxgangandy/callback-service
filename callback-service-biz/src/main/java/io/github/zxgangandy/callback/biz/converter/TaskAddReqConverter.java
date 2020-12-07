@@ -24,6 +24,7 @@ public interface TaskAddReqConverter extends BasicObjectMapper<AddTaskReqBO, Cal
                 .setReqParam(source.getReqParam())
                 .setSourceApp(source.getSourceApp())
                 .setSourceIp(source.getSourceIp())
+                .setTargetUrl(source.getTargetUrl())
                 .setTargetApp(source.getTargetApp());
     }
 

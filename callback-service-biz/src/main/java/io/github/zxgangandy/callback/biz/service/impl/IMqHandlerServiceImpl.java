@@ -29,7 +29,7 @@ public class IMqHandlerServiceImpl implements IMqHandlerService {
     public void subscribe(String topic) {
         RMWrapper.with(RMConsumer.class)
                 .consumerGroup(CONSUMER_GROUP_PREFIX + topic)
-                .nameSrvAddr(rocketMQProperties.getNameServer())
+                .nameSrvAddr(rocketMQProperties.getNameSrvAddr())
                 .subscribe(topic)
                 .concurrentlyProcessor(concurrentlyProcessor)
                 .start();

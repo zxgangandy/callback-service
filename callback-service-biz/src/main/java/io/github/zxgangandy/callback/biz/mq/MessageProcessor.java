@@ -15,15 +15,13 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Component
 @Slf4j
-public class MessageProcessor implements ConcurrentlyProcessor {
+public class MessageProcessor implements ConcurrentlyProcessor<AddTaskReqWrapperBO> {
 
     @Autowired
     private ICallbackTaskService callbackTaskService;
 
     @Override
-    public ConsumeConcurrentlyStatus process(Object messageBody) {
-        AddTaskReqWrapperBO wrapper = (AddTaskReqWrapperBO) (messageBody);
-
+    public ConsumeConcurrentlyStatus process(AddTaskReqWrapperBO wrapper) {
         try {
             processMessage(wrapper);
         } catch (Exception ex) {

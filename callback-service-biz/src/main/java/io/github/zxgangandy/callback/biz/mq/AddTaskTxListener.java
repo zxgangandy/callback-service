@@ -8,8 +8,9 @@ import io.github.zxgangandy.callback.biz.converter.TaskAddReqConverter;
 import io.github.zxgangandy.callback.biz.entity.CallbackTask;
 import io.github.zxgangandy.callback.biz.service.ICallbackTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-
+@Component(value = "addTaskTxListener")
 public class AddTaskTxListener implements MQTxListener {
     @Autowired
     private ICallbackTaskService callbackTaskService;

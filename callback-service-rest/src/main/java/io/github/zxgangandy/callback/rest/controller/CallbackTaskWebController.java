@@ -11,6 +11,7 @@ import io.github.zxgangandy.callback.rest.converter.*;
 import io.jingwei.base.utils.model.P;
 import io.jingwei.base.utils.model.R;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -29,17 +30,26 @@ import static io.jingwei.base.utils.constant.ApiConstant.V_1;
  */
 @RestController
 @RequestMapping("/web/callback")
-@AllArgsConstructor
 public class CallbackTaskWebController {
-    private final ICallbackTaskService       callbackTaskService;
-    private final ICallbackLogService        callbackLogService;
-    private final ICallbackRegService        callbackRegService;
-    private final TaskListReqConverter       taskListReqConverter;
-    private final TaskListRespConverter      taskListRespConverter;
-    private final LogListReqConverter        logListReqConverter;
-    private final LogListRespConverter       logListRespConverter;
-    private final TaskRegReqConverter        taskRegReqConverter;
-    private final TaskTotalInfoRespConverter taskTotalInfoRespConverter;
+
+    @Autowired
+    private ICallbackTaskService       callbackTaskService;
+    @Autowired
+    private ICallbackLogService        callbackLogService;
+    @Autowired
+    private ICallbackRegService        callbackRegService;
+    @Autowired
+    private TaskListReqConverter       taskListReqConverter;
+    @Autowired
+    private TaskListRespConverter      taskListRespConverter;
+    @Autowired
+    private LogListReqConverter        logListReqConverter;
+    @Autowired
+    private LogListRespConverter       logListRespConverter;
+    @Autowired
+    private TaskRegReqConverter        taskRegReqConverter;
+    @Autowired
+    private TaskTotalInfoRespConverter taskTotalInfoRespConverter;
 
     @PostMapping(V_1 +"/task_list")
     public R<P<TaskListResp>> getTaskList(@RequestBody @Valid TaskListReq req) {
