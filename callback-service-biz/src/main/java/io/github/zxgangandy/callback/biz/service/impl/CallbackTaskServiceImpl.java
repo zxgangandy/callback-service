@@ -254,13 +254,13 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
      * @return: void
      */
     private boolean updateCallResult(AddTaskReqWrapperBO wrapper) {
-        String[] successList = new String[]{SUCCESS.getStatus(), PREPARED.getStatus()};
+        String[] successList = new String[]{SUCCESS.getStatus()};
         boolean result = lambdaUpdate()
                 .set(CallbackTask::getCallSuccess, wrapper.getCallSuccess())
                 .set(CallbackTask::getCallResult, wrapper.getCallResult())
                 .setSql("call_count = call_count + 1")
                 .eq(CallbackTask::getTaskId, Long.parseLong(wrapper.getTaskId()))
-                .in(CallbackTask::getCallSuccess, Arrays.asList(successList))
+                .notIn(CallbackTask::getCallSuccess, Arrays.asList(successList))
                 .update();
 
         return result;
