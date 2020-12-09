@@ -279,12 +279,13 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
     }
 
     private void fillReqWrapper(AddTaskReqWrapperBO wrapper, String resp, AddTaskReqBO req) {
-        if (invalidResponse(resp, req.getCallExpect())) {
-            log.warn("resp is empty, or length than expect");
+        if (StringUtils.isEmpty(resp)) {
+            log.warn("resp is empty");
 
             wrapper.setCallResult(EMPTY);
             wrapper.setCallSuccess(FAILED.getStatus());
         } else if (req.getCallExpect().contains(resp)) {
+
             wrapper.setCallResult(resp);
             wrapper.setCallSuccess(SUCCESS.getStatus());
         } else {
@@ -299,8 +300,5 @@ public class CallbackTaskServiceImpl extends ServiceImpl<CallbackTaskMapper, Cal
         return Objects.equals(callbackTask.getCallSuccess(), SUCCESS.getStatus());
     }
 
-    private boolean invalidResponse(String resp, String callExpect) {
-        return resp == null || resp.length() == 0 || resp.length() > callExpect.length();
-    }
 
 }

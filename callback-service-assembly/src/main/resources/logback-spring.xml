@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration debug="false" scan="false">
-    <springProperty scop="context" name="spring.application.name" source="spring.application.name"/>
     <springProperty scop="context" name="log.level" source="logging.level.root" defaultValue="DEBUG"/>
-    <property name="log.path" value="logs/${spring.application.name}" />
+    <property name="log.path" value="logs" />
     <property name="CONSOLE_LOG_PATTERN" value="${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}" />
     <!-- 彩色日志依赖的渲染类 -->
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
@@ -26,7 +25,7 @@
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>
-            <pattern>[%date{ISO8601}]|%-5level|[${spring.application.name},%X{X-B3-TraceId:-},%X{X-B3-SpanId:-},%X{X-Span-Export:-}]|[%thread]|%logger{0}|%F.%M:%L|%msg%n</pattern>
+            <pattern>[%date{ISO8601}]|%-5level|[%X{X-B3-TraceId:-},%X{X-B3-SpanId:-},%X{X-Span-Export:-}]|[%thread]|%logger{0}|%F.%M:%L|%msg%n</pattern>
         </encoder>
     </appender>
 
@@ -51,7 +50,7 @@
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>
-            <pattern>[%date{ISO8601}]|%-5level|[${spring.application.name},%X{X-B3-TraceId:-},%X{X-B3-SpanId:-},%X{X-Span-Export:-}]|[%thread]|%logger{0}|%F.%M:%L|%msg%n</pattern>
+            <pattern>[%date{ISO8601}]|%-5level|[%X{X-B3-TraceId:-},%X{X-B3-SpanId:-},%X{X-Span-Export:-}]|[%thread]|%logger{0}|%F.%M:%L|%msg%n</pattern>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>ERROR</level>
@@ -59,18 +58,11 @@
     </appender>
 
     <!-- Level: FATAL 0  ERROR 3  WARN 4  INFO 6  DEBUG 7 -->
+    <root level="${log.level}">
+        <appender-ref ref="console" />
+        <appender-ref ref="async-debug" />
+        <appender-ref ref="error" />
+    </root>
 
-    <springProfile name="dev">
-        <root level="${log.level}">
-            <appender-ref ref="console"/>
-            <appender-ref ref="async-debug"/>
-            <appender-ref ref="error"/>
-        </root>
-    </springProfile>
-    <springProfile name="test | uat | prod">
-        <root level="${log.level}">
-            <appender-ref ref="async-debug"/>
-            <appender-ref ref="error"/>
-        </root>
-    </springProfile>
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 </configuration>

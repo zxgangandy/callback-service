@@ -1,12 +1,59 @@
+logging:
+  config: classpath:logback-prod.xml
 
-app:
-  id: payment-service
+spring:
+  application:
+    name: callback-service
+  messages:
+    basename: i18n/message
+  mvc:
+    throw-exception-if-no-handler-found: true
+  datasource:
+    #   数据源基本配置
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/callback-center?characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      maximumPoolSize: 10
+      minimumIdle: 2
+      idleTimeout: 600000
+      connectionTimeout: 30000
+      maxLifetime: 1800000
+      connection-test-query: SELECT 1
 
-apollo:
-  meta: http://127.0.0.1:8080
-  cluster: default
-  bootstrap:
-    namespaces: application.yml
-  enabled: true
+#mybaits-plus配置，修改主键类型，mapper.xml、type 别名等
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/*Mapper.xml
+  typeAliasesPackage: io.jingwei.pament.biz.entity,io.jingwei.base.idgen.worker.entity
+  global-config:
+    #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
+    id-type: 0
+    #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+    field-strategy: 1
+    #驼峰下划线转换
+    db-column-underline: true
+    #刷新mapper 调试神器
+    refresh-mapper: true
+    #数据库大写下划线转换
+    #capital-mode: true
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: http://eureka:password@localhost:8761/eureka
+    enabled: true
+    register-with-eureka: true
+
+rocketmq:
+  nameSrvAddr: 127.0.0.1:9876
+  producer:
+    producerGroup: producer-group
 
 

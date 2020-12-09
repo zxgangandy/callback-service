@@ -10,9 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-import static io.github.zxgangandy.callback.biz.constant.CallSuccessStatus.FAILED;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-
 @Component
 @Slf4j
 public class MessageProcessor implements ConcurrentlyProcessor<AddTaskReqWrapperBO> {
@@ -24,10 +21,11 @@ public class MessageProcessor implements ConcurrentlyProcessor<AddTaskReqWrapper
     public ConsumeConcurrentlyStatus process(AddTaskReqWrapperBO wrapper) {
         try {
             if (!processMessage(wrapper)) {
+                log.warn("MessageProcessor=>need retry, taskId={}", wrapper.getTaskId());
                 return ConsumeConcurrentlyStatus.RECONSUME_LATER;
             }
         } catch (Exception ex) {
-            log.error("processMessage failed, ex={}", ex);
+            log.error("processMessage failed, taskId={}, ex={}", wrapper.getTaskId(), ex);
             return ConsumeConcurrentlyStatus.RECONSUME_LATER;
         }
 
