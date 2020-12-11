@@ -17,6 +17,12 @@
             <artifactId>callback-service-rest</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.github.zxgangandy</groupId>
+            <artifactId>eureka-manager</artifactId>
+            <version>1.0.4</version>
+        </dependency>
     </dependencies>
 
 

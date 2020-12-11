@@ -1,6 +1,7 @@
 package io.github.zxgangandy.callback.assembly;
 
 
+import io.github.zxgangandy.eureka.manager.EnableEurekaManage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,6 +15,7 @@ import java.net.UnknownHostException;
 
 @ComponentScan(basePackages = {"io.github.zxgangandy.callback", "io.jingwei.base"})
 //@EnableFeignClients(basePackages = {"io.jingwei.otc"})
+@EnableEurekaManage
 @SpringBootApplication
 @Slf4j
 public class CallbackServiceApplication {

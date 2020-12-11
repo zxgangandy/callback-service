@@ -19,7 +19,7 @@
     <appender name="debug" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${log.path}/debug.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/%d{yyyy-MM}/debug.%d{yyyy-MM-dd_HH}.log.gz</fileNamePattern>
+            <fileNamePattern>${log.path}/debug.%d{yyyy-MM-dd_HH}.log.gz</fileNamePattern>
             <maxHistory>30</maxHistory>
             <totalSizeCap>10GB</totalSizeCap>
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
