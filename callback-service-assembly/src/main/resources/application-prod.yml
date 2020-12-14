@@ -1,5 +1,6 @@
 logging:
   config: classpath:logback-prod.xml
+  level: info
 
 spring:
   application:

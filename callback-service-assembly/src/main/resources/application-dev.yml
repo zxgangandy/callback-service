@@ -1,6 +1,6 @@
 
-#logging:
-#  config: classpath:logback-spring.xml
+logging:
+  config: classpath:logback-dev.xml
 
 spring:
   application:
