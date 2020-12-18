@@ -56,6 +56,6 @@ eureka:
 rocketmq:
   nameSrvAddr: 127.0.0.1:9876
   producer:
-    producerGroup: producer-group
+    producerGroup: callback-producer-group
 
 
