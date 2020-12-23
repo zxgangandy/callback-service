@@ -38,7 +38,7 @@ public class CallbackTaskApiController {
     private final ICallbackTaskService callbackTaskService;
 
     @PostMapping(V_1 +"/add_task")
-    public R<AddTaskResp> createSimplePayOrder(@RequestBody @Valid AddTaskReq req) {
+    public R<AddTaskResp> addTask(@RequestBody @Valid AddTaskReq req) {
         AddTaskReqBO reqBO   = addTaskReqConverter.to(req);
         reqBO.setSourceIp(IpUtil.getIp());
 
