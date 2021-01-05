@@ -25,7 +25,7 @@ public class CallbackServiceApplication {
         String ip = InetAddress.getLocalHost().getHostAddress();
         String port = env.getProperty("server.port");
         log.info("\n----------------------------------------------------------\n\t" +
-                "Application PaymentApplication is running! Access URLs:\n\t" +
+                "Application CallbackServiceApplication is running! Access URLs:\n\t" +
                 "Local: \t\thttp://localhost:" + port + "/\n\t" +
                 "External: \thttp://" + ip + ":" + port + "/\n\t" +
                 "swagger-ui: http://" + ip + ":" + port + "/swagger-ui.html\n\t" +
