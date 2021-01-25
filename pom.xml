@@ -55,9 +55,9 @@
     </distributionManagement>
 
     <scm>
-        <url>https://github.com/zxgangandy/rocketmq-wrapper</url>
+        <url>https://github.com/zxgangandy/callback-service</url>
         <connection>https://github.com/zxgangandy/callback-service.git</connection>
-        <developerConnection>https://github.com/zxgangandy/rocketmq-wrapper</developerConnection>
+        <developerConnection>https://github.com/zxgangandy/callback-service</developerConnection>
     </scm>
 
 
